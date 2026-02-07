@@ -10,6 +10,7 @@ import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { AuditTable } from "@/components/audit/audit-table";
 import { ImportExportButtons } from "@/components/import-export-buttons";
 import { GodModePanel } from "@/components/god-mode/god-mode-panel";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Kanban Board View
 function BoardView() {
@@ -85,7 +86,7 @@ function MainContent() {
             </div>
           </div>
 
-          {/* Import/Export & God Mode Switch */}
+          {/* Import/Export, God Mode Switch & Theme Toggle */}
           <div className="flex items-center gap-4">
             <ImportExportButtons />
             <div className="flex items-center space-x-2">
@@ -103,6 +104,7 @@ function MainContent() {
                 God Mode
               </Label>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
