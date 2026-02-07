@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RiDashboardLine, RiFileTextLine, RiStarLine } from "@remixicon/react";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
+import { AuditTable } from "@/components/audit/audit-table";
 
 // Kanban Board View
 function BoardView() {
@@ -27,9 +28,14 @@ function BoardView() {
 
 function AuditView() {
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold">Auditoría</h2>
-      <p className="text-muted-foreground">Audit view coming soon...</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">Log de Auditoría</h2>
+        <p className="text-sm text-muted-foreground">
+          Historial completo de cambios con diff antes/después
+        </p>
+      </div>
+      <AuditTable />
     </div>
   );
 }
