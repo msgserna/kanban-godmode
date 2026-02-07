@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RiDashboardLine, RiFileTextLine, RiStarLine } from "@remixicon/react";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { AuditTable } from "@/components/audit/audit-table";
+import { ImportExportButtons } from "@/components/import-export-buttons";
 
 // Kanban Board View
 function BoardView() {
@@ -72,20 +73,23 @@ function MainContent() {
             </p>
           </div>
 
-          {/* God Mode Switch */}
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="god-mode-switch"
-              checked={state.godModeEnabled}
-              onCheckedChange={setGodModeEnabled}
-              aria-label="Toggle God Mode"
-            />
-            <Label
-              htmlFor="god-mode-switch"
-              className="cursor-pointer text-sm font-medium"
-            >
-              👑 God Mode
-            </Label>
+          {/* Import/Export & God Mode Switch */}
+          <div className="flex items-center gap-4">
+            <ImportExportButtons />
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="god-mode-switch"
+                checked={state.godModeEnabled}
+                onCheckedChange={setGodModeEnabled}
+                aria-label="Toggle God Mode"
+              />
+              <Label
+                htmlFor="god-mode-switch"
+                className="cursor-pointer text-sm font-medium"
+              >
+                👑 God Mode
+              </Label>
+            </div>
           </div>
         </div>
       </header>
