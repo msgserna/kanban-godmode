@@ -9,6 +9,7 @@ import { RiDashboardLine, RiFileTextLine, RiStarLine } from "@remixicon/react";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { AuditTable } from "@/components/audit/audit-table";
 import { ImportExportButtons } from "@/components/import-export-buttons";
+import { GodModePanel } from "@/components/god-mode/god-mode-panel";
 
 // Kanban Board View
 function BoardView() {
@@ -43,9 +44,14 @@ function AuditView() {
 
 function GodModeView() {
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold">Modo Dios</h2>
-      <p className="text-muted-foreground">God Mode view coming soon...</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">👑 Modo Dios</h2>
+        <p className="text-sm text-muted-foreground">
+          Evalúa tareas con rúbrica y observaciones
+        </p>
+      </div>
+      <GodModePanel />
     </div>
   );
 }
