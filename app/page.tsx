@@ -6,13 +6,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RiDashboardLine, RiFileTextLine, RiStarLine } from "@remixicon/react";
+import { KanbanBoard } from "@/components/kanban/kanban-board";
 
-// Placeholder components (to be implemented)
+// Kanban Board View
 function BoardView() {
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold">Kanban Board</h2>
-      <p className="text-muted-foreground">Board view coming soon...</p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Kanban Board</h2>
+          <p className="text-sm text-muted-foreground">
+            Gestiona tus tareas con drag & drop
+          </p>
+        </div>
+      </div>
+      <KanbanBoard />
     </div>
   );
 }
