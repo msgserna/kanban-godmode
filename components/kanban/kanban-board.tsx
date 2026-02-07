@@ -9,6 +9,7 @@ import { TaskFormDialog } from "./task-form-dialog";
 import { TaskCard } from "./task-card";
 import { SearchBar } from "./search-bar";
 import { filterTasks } from "@/lib/query";
+import { RiTodoLine, RiLoaderLine, RiCheckboxCircleLine } from "@remixicon/react";
 
 export function KanbanBoard() {
   const { state, deleteTask, moveTask } = useApp();
@@ -96,24 +97,27 @@ export function KanbanBoard() {
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <DroppableColumn
-            title="📋 To Do"
+            title="To Do"
             status="todo"
+            icon={<RiTodoLine className="h-5 w-5" />}
             tasks={tasksByStatus.todo}
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
           />
           <DroppableColumn
-            title="🚀 Doing"
+            title="Doing"
             status="doing"
+            icon={<RiLoaderLine className="h-5 w-5" />}
             tasks={tasksByStatus.doing}
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
           />
           <DroppableColumn
-            title="✅ Done"
+            title="Done"
             status="done"
+            icon={<RiCheckboxCircleLine className="h-5 w-5" />}
             tasks={tasksByStatus.done}
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}

@@ -11,6 +11,7 @@ interface DroppableColumnProps {
   title: string;
   status: TaskStatus;
   tasks: Task[];
+  icon?: React.ReactNode;
   onAddTask?: (status: TaskStatus) => void;
   onEditTask?: (task: Task) => void;
   onDeleteTask?: (taskId: string) => void;
@@ -20,6 +21,7 @@ export function DroppableColumn({
   title,
   status,
   tasks,
+  icon,
   onAddTask,
   onEditTask,
   onDeleteTask,
@@ -38,6 +40,7 @@ export function DroppableColumn({
       {/* Column Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
+          {icon && <span className="text-primary">{icon}</span>}
           <h3 className="font-semibold text-lg">{title}</h3>
           <Badge variant="secondary" className="font-normal">
             {tasks.length}

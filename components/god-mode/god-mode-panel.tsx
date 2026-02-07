@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RiStarFill, RiStarLine, RiCheckLine } from "@remixicon/react";
+import { RiStarFill, RiStarLine, RiCheckLine, RiShieldStarLine } from "@remixicon/react";
 
 interface TaskEvalFormProps {
   task: Task;
@@ -177,7 +177,8 @@ export function GodModePanel() {
       <Card className="border-2 border-primary/20 bg-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            👑 Panel Resumen - Modo Dios
+            <RiShieldStarLine className="h-5 w-5 text-primary" />
+            Panel Resumen - Modo Dios
           </CardTitle>
           <CardDescription>
             Estadísticas de evaluación de tareas

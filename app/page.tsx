@@ -5,7 +5,7 @@ import { AppProvider, useApp } from "@/lib/app-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { RiDashboardLine, RiFileTextLine, RiStarLine } from "@remixicon/react";
+import { RiDashboardLine, RiFileTextLine, RiStarLine, RiTargetLine, RiShieldStarLine } from "@remixicon/react";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { AuditTable } from "@/components/audit/audit-table";
 import { ImportExportButtons } from "@/components/import-export-buttons";
@@ -45,11 +45,14 @@ function AuditView() {
 function GodModeView() {
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">👑 Modo Dios</h2>
-        <p className="text-sm text-muted-foreground">
-          Evalúa tareas con rúbrica y observaciones
-        </p>
+      <div className="flex items-center gap-3">
+        <RiShieldStarLine className="h-7 w-7 text-primary" />
+        <div>
+          <h2 className="text-2xl font-bold">Modo Dios</h2>
+          <p className="text-sm text-muted-foreground">
+            Evalúa tareas con rúbrica y observaciones
+          </p>
+        </div>
       </div>
       <GodModePanel />
     </div>
@@ -70,13 +73,16 @@ function MainContent() {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              🎯 Kanban God
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Advanced Task Management with Audit Logs
-            </p>
+          <div className="flex items-center gap-3">
+            <RiTargetLine className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">
+                Kanban God
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Advanced Task Management with Audit Logs
+              </p>
+            </div>
           </div>
 
           {/* Import/Export & God Mode Switch */}
@@ -91,9 +97,10 @@ function MainContent() {
               />
               <Label
                 htmlFor="god-mode-switch"
-                className="cursor-pointer text-sm font-medium"
+                className="cursor-pointer text-sm font-medium flex items-center gap-1.5"
               >
-                👑 God Mode
+                <RiShieldStarLine className="h-4 w-4" />
+                God Mode
               </Label>
             </div>
           </div>
