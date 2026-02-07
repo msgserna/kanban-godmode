@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
 import { TaskStatus, Task } from "@/types";
 import { useApp } from "@/lib/app-context";
 import { DroppableColumn } from "./droppable-column";
 import { TaskFormDialog } from "./task-form-dialog";
 import { TaskCard } from "./task-card";
+import { SearchBar } from "./search-bar";
+import { filterTasks } from "@/lib/query";
 
 export function KanbanBoard() {
   const { state, deleteTask, moveTask } = useApp();
@@ -14,12 +16,18 @@ export function KanbanBoard() {
   const [creatingInColumn, setCreatingInColumn] = useState<TaskStatus | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Group tasks by status
+  // Filter tasks using advanced query parser
+  const filteredTasks = useMemo(() => {
+    return filterTasks(state.tasks, searchQuery);
+  }, [state.tasks, searchQuery]);
+
+  // Group filtered tasks by status
   const tasksByStatus = {
-    todo: state.tasks.filter((t) => t.estado === "todo"),
-    doing: state.tasks.filter((t) => t.estado === "doing"),
-    done: state.tasks.filter((t) => t.estado === "done"),
+    todo: filteredTasks.filter((t) => t.estado === "todo"),
+    doing: filteredTasks.filter((t) => t.estado === "doing"),
+    done: filteredTasks.filter((t) => t.estado === "done"),
   };
 
   const handleAddTask = (status: TaskStatus) => {
@@ -75,6 +83,16 @@ export function KanbanBoard() {
 
   return (
     <>
+      {/* Search Bar */}
+      <div className="mb-6">
+        <SearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          resultCount={filteredTasks.length}
+          totalCount={state.tasks.length}
+        />
+      </div>
+
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <DroppableColumn
