@@ -26,7 +26,7 @@ interface AppContextType {
   deleteTask: (id: string) => void;
   moveTask: (id: string, newEstado: TaskStatus) => void;
   setGodModeEnabled: (enabled: boolean) => void;
-  saveGodModeEval: (eval: Omit<GodModeEval, "fechaEval">) => void;
+  saveGodModeEval: (evalData: Omit<GodModeEval, "fechaEval">) => void;
   exportData: () => void;
   importData: (data: AppState) => void;
 }
