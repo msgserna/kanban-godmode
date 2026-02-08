@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Task, TaskStatus, Priority } from "@/types";
-import { taskSchema, TaskFormValues } from "@/lib/validations";
+import { taskSchema, TaskFormValues, parseTags } from "@/lib/validations";
 import { useApp } from "@/lib/app-context";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { RiCalendarLine } from "@remixicon/react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface TaskFormDialogProps {
   open: boolean;
@@ -62,6 +68,7 @@ export function TaskFormDialog({
   });
 
   const prioridad = watch("prioridad");
+  const fechaLimite = watch("fechaLimite");
 
   // Reset form when dialog opens/closes or task changes
   useEffect(() => {
@@ -88,17 +95,18 @@ export function TaskFormDialog({
 
   const onSubmit = async (data: TaskFormValues) => {
     try {
+      const tags = parseTags(data.tags);
       if (isEditing) {
         updateTask(task.id, {
           ...data,
-          tags: data.tags as string[],
+          tags,
           fechaLimite: data.fechaLimite || undefined,
         });
       } else {
         createTask(
           {
             ...data,
-            tags: data.tags as string[],
+            tags,
             fechaLimite: data.fechaLimite || undefined,
           },
           defaultStatus
@@ -174,9 +182,24 @@ export function TaskFormDialog({
                 <SelectValue placeholder="Selecciona prioridad" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="low">🟢 Baja</SelectItem>
-                <SelectItem value="medium">🟡 Media</SelectItem>
-                <SelectItem value="high">🔴 Alta</SelectItem>
+                <SelectItem value="low">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-sm bg-blue-500" />
+                    Baja
+                  </span>
+                </SelectItem>
+                <SelectItem value="medium">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-sm bg-yellow-500" />
+                    Media
+                  </span>
+                </SelectItem>
+                <SelectItem value="high">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-sm bg-red-500" />
+                    Alta
+                  </span>
+                </SelectItem>
               </SelectContent>
             </Select>
             {errors.prioridad && (
@@ -208,13 +231,46 @@ export function TaskFormDialog({
 
             {/* Fecha Límite */}
             <div className="space-y-2">
-              <Label htmlFor="fechaLimite">Fecha Límite</Label>
-              <Input
-                id="fechaLimite"
-                type="date"
-                {...register("fechaLimite")}
-                aria-invalid={!!errors.fechaLimite}
-              />
+              <Label>Fecha Límite</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={`w-full justify-start text-left font-normal ${
+                      !fechaLimite ? "text-muted-foreground" : ""
+                    }`}
+                  >
+                    <RiCalendarLine className="mr-2 h-4 w-4" />
+                    {fechaLimite
+                      ? format(new Date(fechaLimite), "dd/MM/yyyy", { locale: es })
+                      : "Seleccionar fecha"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={fechaLimite ? new Date(fechaLimite) : undefined}
+                    onSelect={(date) => {
+                      setValue("fechaLimite", date ? format(date, "yyyy-MM-dd") : "");
+                    }}
+                    locale={es}
+                  />
+                  {fechaLimite && (
+                    <div className="border-t p-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-muted-foreground"
+                        onClick={() => setValue("fechaLimite", "")}
+                      >
+                        Quitar fecha
+                      </Button>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
@@ -237,20 +293,32 @@ export function TaskFormDialog({
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Guardando..."
-                : isEditing
-                ? "Actualizar"
-                : "Crear Tarea"}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancelar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Cerrar sin guardar</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? "Guardando..."
+                    : isEditing
+                    ? "Actualizar"
+                    : "Crear Tarea"}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isEditing ? "Guardar cambios" : "Crear la tarea"}
+              </TooltipContent>
+            </Tooltip>
           </DialogFooter>
         </form>
       </DialogContent>

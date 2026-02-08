@@ -8,8 +8,22 @@ import { DroppableColumn } from "./droppable-column";
 import { TaskFormDialog } from "./task-form-dialog";
 import { TaskCard } from "./task-card";
 import { SearchBar } from "./search-bar";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { filterTasks } from "@/lib/query";
-import { RiTodoLine, RiLoaderLine, RiCheckboxCircleLine } from "@remixicon/react";
+import { ImportExportButtons } from "@/components/import-export-buttons";
+import { Separator } from "@/components/ui/separator";
+import { RiTodoLine, RiLoaderLine, RiCheckboxCircleLine, RiEyeLine, RiAddLine } from "@remixicon/react";
 
 export function KanbanBoard() {
   const { state, deleteTask, moveTask } = useApp();
@@ -18,6 +32,7 @@ export function KanbanBoard() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
 
   // Filter tasks using advanced query parser
   const filteredTasks = useMemo(() => {
@@ -28,11 +43,12 @@ export function KanbanBoard() {
   const tasksByStatus = {
     todo: filteredTasks.filter((t) => t.estado === "todo"),
     doing: filteredTasks.filter((t) => t.estado === "doing"),
+    review: filteredTasks.filter((t) => t.estado === "review"),
     done: filteredTasks.filter((t) => t.estado === "done"),
   };
 
-  const handleAddTask = (status: TaskStatus) => {
-    setCreatingInColumn(status);
+  const handleAddTask = () => {
+    setCreatingInColumn("todo"); // Siempre crea en To Do
     setEditingTask(null);
     setIsFormOpen(true);
   };
@@ -44,8 +60,13 @@ export function KanbanBoard() {
   };
 
   const handleDeleteTask = (taskId: string) => {
-    if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
-      deleteTask(taskId);
+    setDeletingTaskId(taskId);
+  };
+
+  const confirmDelete = () => {
+    if (deletingTaskId) {
+      deleteTask(deletingTaskId);
+      setDeletingTaskId(null);
     }
   };
 
@@ -84,44 +105,68 @@ export function KanbanBoard() {
 
   return (
     <>
-      {/* Search Bar */}
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          resultCount={filteredTasks.length}
-          totalCount={state.tasks.length}
-        />
+      {/* Search Bar & New Task Button */}
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[520px]">
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            resultCount={filteredTasks.length}
+            totalCount={state.tasks.length}
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <ImportExportButtons />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={handleAddTask} className="gap-2 shrink-0">
+                <RiAddLine className="h-4 w-4" />
+                New Task
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Crear una tarea nueva</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
+      <Separator className="mb-6" />
 
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <DroppableColumn
             title="To Do"
             status="todo"
             icon={<RiTodoLine className="h-5 w-5" />}
             tasks={tasksByStatus.todo}
-            onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
+            headerColor="bg-blue-600"
           />
           <DroppableColumn
             title="Doing"
             status="doing"
             icon={<RiLoaderLine className="h-5 w-5" />}
             tasks={tasksByStatus.doing}
-            onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
+            headerColor="bg-yellow-500"
+          />
+          <DroppableColumn
+            title="Review"
+            status="review"
+            icon={<RiEyeLine className="h-5 w-5" />}
+            tasks={tasksByStatus.review}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            headerColor="bg-orange-500"
           />
           <DroppableColumn
             title="Done"
             status="done"
             icon={<RiCheckboxCircleLine className="h-5 w-5" />}
             tasks={tasksByStatus.done}
-            onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
+            headerColor="bg-green-600"
           />
         </div>
 
@@ -136,6 +181,26 @@ export function KanbanBoard() {
         task={editingTask || undefined}
         defaultStatus={creatingInColumn || "todo"}
       />
+
+      <AlertDialog open={!!deletingTaskId} onOpenChange={(open) => !open && setDeletingTaskId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar tarea</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La tarea será eliminada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

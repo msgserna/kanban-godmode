@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useApp } from "@/lib/app-context";
 import { importFromJSON } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -83,26 +84,36 @@ export function ImportExportButtons() {
   return (
     <>
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExport}
-          className="gap-2"
-          aria-label="Exportar datos"
-        >
-          <RiDownloadLine className="h-4 w-4" />
-          Exportar
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleImportClick}
-          className="gap-2"
-          aria-label="Importar datos"
-        >
-          <RiUploadLine className="h-4 w-4" />
-          Importar
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="default"
+              onClick={handleExport}
+              className="gap-2 hover:bg-primary/20 hover:text-foreground"
+              aria-label="Exportar datos"
+            >
+              <RiDownloadLine className="h-4 w-4" />
+              Exportar
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Descarga todas las tareas en JSON</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="default"
+              onClick={handleImportClick}
+              className="gap-2 hover:bg-primary/20 hover:text-foreground"
+              aria-label="Importar datos"
+            >
+              <RiUploadLine className="h-4 w-4" />
+              Importar
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Carga tareas desde un archivo JSON</TooltipContent>
+        </Tooltip>
         <input
           ref={fileInputRef}
           type="file"

@@ -36,13 +36,13 @@ Abrir [http://localhost:3000](http://localhost:3000)
 ## 📸 Capturas
 
 ### 1. Kanban Board con Drag & Drop
-_Tablero con 3 columnas, búsqueda avanzada y drag & drop funcional_
+![Descripción](./public/images/kanban.png)
 
 ### 2. Auditoría con Diff
-_Log de auditoría mostrando cambios antes/después con diff coloreado_
+![Descripción](./public/images/auditoria.png)
 
 ### 3. Modo Dios
-_Panel de evaluación con rúbrica 0-10 y estadísticas_
+![Descripción](./public/images/godmode.png)
 
 ## ✅ Checklist de Requisitos
 
@@ -75,7 +75,7 @@ _Panel de evaluación con rúbrica 0-10 y estadísticas_
 - [x] README completo con objetivo, uso y capturas
 - [x] Decisiones técnicas documentadas
 
-## 🏗️ Decisiones Técnicas
+## Decisiones Técnicas
 
 ### Arquitectura
 - **Context API** para estado global en lugar de Redux/Zustand por simplicidad y menos boilerplate
@@ -115,7 +115,7 @@ Usamos `@dnd-kit` con:
 
 La clave es que `onDragEnd` llama a `moveTask()` que automáticamente registra el cambio en auditoría.
 
-## 📦 Dependencias Principales
+## Dependencias Principales
 
 ```json
 {
@@ -132,7 +132,7 @@ La clave es que `onDragEnd` llama a `moveTask()` que automáticamente registra e
 }
 ```
 
-## 🎨 Stack Tecnológico
+## Stack Tecnológico
 
 - **Framework**: Next.js 16 (App Router)
 - **UI**: Shadcn UI + Radix UI
@@ -144,9 +144,5 @@ La clave es que `onDragEnd` llama a `moveTask()` que automáticamente registra e
 
 ## 👤 Autor
 
-**Alumno/a**
-Desarrollo Web Servidor - DAW2
+**Msgserna**
 
----
-
-🤖 *Co-Authored-By: Claude Sonnet 4.5*

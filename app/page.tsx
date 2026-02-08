@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { AppProvider, useApp } from "@/lib/app-context";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { RiDashboardLine, RiFileTextLine, RiStarLine, RiTargetLine, RiShieldStarLine } from "@remixicon/react";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { AuditTable } from "@/components/audit/audit-table";
-import { ImportExportButtons } from "@/components/import-export-buttons";
 import { GodModePanel } from "@/components/god-mode/god-mode-panel";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -88,22 +89,26 @@ function MainContent() {
 
           {/* Import/Export, God Mode Switch & Theme Toggle */}
           <div className="flex items-center gap-4">
-            <ImportExportButtons />
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="god-mode-switch"
-                checked={state.godModeEnabled}
-                onCheckedChange={setGodModeEnabled}
-                aria-label="Toggle God Mode"
-              />
-              <Label
-                htmlFor="god-mode-switch"
-                className="cursor-pointer text-sm font-medium flex items-center gap-1.5"
-              >
-                <RiShieldStarLine className="h-4 w-4" />
-                God Mode
-              </Label>
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="god-mode-switch"
+                    checked={state.godModeEnabled}
+                    onCheckedChange={setGodModeEnabled}
+                    aria-label="Toggle God Mode"
+                  />
+                  <Label
+                    htmlFor="god-mode-switch"
+                    className="cursor-pointer text-sm font-medium flex items-center gap-1.5"
+                  >
+                    <RiShieldStarLine className="h-4 w-4" />
+                    God Mode
+                  </Label>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Activa o desactiva el Modo Dios</TooltipContent>
+            </Tooltip>
             <ThemeToggle />
           </div>
         </div>
@@ -112,20 +117,62 @@ function MainContent() {
       {/* Main Content with Tabs */}
       <main className="container mx-auto px-6 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="board" className="gap-2">
-              <RiDashboardLine className="h-4 w-4" />
-              Board
-            </TabsTrigger>
-            <TabsTrigger value="audit" className="gap-2">
-              <RiFileTextLine className="h-4 w-4" />
-              Auditoría
-            </TabsTrigger>
+          <TabsList className="mb-6 gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger
+                  value="board"
+                  className={cn(
+                    "gap-2",
+                    activeTab !== "board" &&
+                      "hover:bg-primary/20 hover:text-foreground",
+                    activeTab === "board" &&
+                      "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20"
+                  )}
+                >
+                  <RiDashboardLine className="h-4 w-4" />
+                  Board
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Ver el tablero Kanban</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger
+                  value="audit"
+                  className={cn(
+                    "gap-2",
+                    activeTab !== "audit" &&
+                      "hover:bg-primary/20 hover:text-foreground",
+                    activeTab === "audit" &&
+                      "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20"
+                  )}
+                >
+                  <RiFileTextLine className="h-4 w-4" />
+                  Auditoría
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Ver el historial de cambios</TooltipContent>
+            </Tooltip>
             {state.godModeEnabled && (
-              <TabsTrigger value="god-mode" className="gap-2">
-                <RiStarLine className="h-4 w-4" />
-                God Mode
-              </TabsTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TabsTrigger
+                    value="god-mode"
+                    className={cn(
+                      "gap-2",
+                      activeTab !== "god-mode" &&
+                        "hover:bg-primary/20 hover:text-foreground",
+                      activeTab === "god-mode" &&
+                        "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20"
+                    )}
+                  >
+                    <RiStarLine className="h-4 w-4" />
+                    God Mode
+                  </TabsTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Evaluar tareas con rúbrica</TooltipContent>
+              </Tooltip>
             )}
           </TabsList>
 

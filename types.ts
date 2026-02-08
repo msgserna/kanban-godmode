@@ -7,7 +7,7 @@
 // TASK TYPES
 // ============================================
 
-export type TaskStatus = "todo" | "doing" | "done";
+export type TaskStatus = "todo" | "doing" | "review" | "done";
 
 export type Priority = "low" | "medium" | "high";
 
@@ -49,10 +49,16 @@ export interface AuditLog {
 // GOD MODE TYPES
 // ============================================
 
+export interface RubricaCriterio {
+  nombre: string;
+  puntuacion: number; // 0-10
+}
+
 export interface GodModeEval {
   taskId: string;
   observaciones: string;
-  rubrica: number; // 0-10
+  criterios: RubricaCriterio[];
+  rubrica: number; // Media calculada de los criterios (0-10)
   fechaEval: string; // ISO 8601
 }
 
@@ -102,6 +108,7 @@ export interface TaskFormData {
 export interface TasksByStatus {
   todo: Task[];
   doing: Task[];
+  review: Task[];
   done: Task[];
 }
 

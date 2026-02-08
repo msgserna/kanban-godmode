@@ -18,24 +18,14 @@ export const taskSchema = z.object({
     .or(z.literal("")),
 
   prioridad: z.enum(["low", "medium", "high"], {
-    required_error: "Selecciona una prioridad",
+    message: "Selecciona una prioridad",
   }),
 
-  tags: z
-    .string()
-    .transform((val) => {
-      if (!val.trim()) return [];
-      return val
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
-    })
-    .pipe(z.array(z.string()).max(10, "Máximo 10 tags")),
+  tags: z.string(),
 
   estimacionMin: z
     .number({
-      required_error: "La estimación es requerida",
-      invalid_type_error: "Debe ser un número",
+      message: "Debe ser un número válido",
     })
     .min(1, "La estimación debe ser al menos 1 minuto")
     .max(9999, "La estimación no puede exceder 9999 minutos"),
@@ -47,3 +37,10 @@ export const taskSchema = z.object({
 });
 
 export type TaskFormValues = z.infer<typeof taskSchema>;
+
+/** Parse comma-separated tags string into array */
+export function parseTags(tags: string): string[] {
+  if (!tags.trim()) return [];
+  const parsed = tags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+  return parsed.slice(0, 10);
+}

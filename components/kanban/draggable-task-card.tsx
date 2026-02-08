@@ -22,12 +22,16 @@ export function DraggableTaskCard({ task, onEdit, onDelete }: DraggableTaskCardP
   const style = {
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.5 : 1,
-    cursor: isDragging ? "grabbing" : "grab",
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} onEdit={onEdit} onDelete={onDelete} />
+    <div ref={setNodeRef} style={style}>
+      <TaskCard
+        task={task}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        dragHandleProps={{ ...attributes, ...listeners }}
+      />
     </div>
   );
 }

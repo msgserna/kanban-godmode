@@ -3,6 +3,7 @@
 import { Task, TaskStatus } from "@/types";
 import { TaskCard } from "./task-card";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { RiAddLine } from "@remixicon/react";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,8 +17,9 @@ interface KanbanColumnProps {
 }
 
 const statusColors = {
-  todo: "bg-slate-100 border-slate-300",
-  doing: "bg-blue-50 border-blue-300",
+  todo: "bg-blue-50 border-blue-300",
+  doing: "bg-yellow-50 border-yellow-300",
+  review: "bg-orange-50 border-orange-300",
   done: "bg-green-50 border-green-300",
 };
 
@@ -30,7 +32,7 @@ export function KanbanColumn({
   onDeleteTask,
 }: KanbanColumnProps) {
   return (
-    <div className="flex min-h-[600px] w-full flex-col rounded-lg border-2 bg-muted/30 p-4">
+    <div className={`flex min-h-[600px] w-full flex-col rounded-lg border-2 p-4 ${statusColors[status] ?? "bg-muted/30 border-border"}`}>
       {/* Column Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -39,15 +41,20 @@ export function KanbanColumn({
             {tasks.length}
           </Badge>
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onAddTask?.(status)}
-          className="h-8 w-8 p-0"
-          aria-label={`Añadir tarea a ${title}`}
-        >
-          <RiAddLine className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onAddTask?.(status)}
+              className="h-8 w-8 p-0"
+              aria-label={`Añadir tarea a ${title}`}
+            >
+              <RiAddLine className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Añadir tarea a {title}</TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Tasks List */}

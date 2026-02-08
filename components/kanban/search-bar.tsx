@@ -46,15 +46,20 @@ export function SearchBar({ value, onChange, resultCount, totalCount }: SearchBa
             aria-describedby="search-help"
           />
           {value && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
-              onClick={handleClear}
-              aria-label="Limpiar búsqueda"
-            >
-              <RiCloseLine className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+                  onClick={handleClear}
+                  aria-label="Limpiar búsqueda"
+                >
+                  <RiCloseLine className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Limpiar la búsqueda</TooltipContent>
+            </Tooltip>
           )}
         </div>
 
