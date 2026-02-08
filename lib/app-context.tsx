@@ -115,23 +115,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // AUDIT LOG HELPER
   // ============================================
 
-  const createAuditLog = useCallback(
-    (accion: AuditAction, taskId: string, taskTitulo: string, diff: AuditDiff[]) => {
-      const log: AuditLog = {
-        id: uuidv4(),
-        timestamp: new Date().toISOString(),
-        accion,
-        taskId,
-        taskTitulo,
-        diff,
-        userLabel: "Alumno/a",
-      };
-
-      setState((prev) => ({
-        ...prev,
-        auditLogs: [...prev.auditLogs, log],
-      }));
-    },
+  const buildAuditLog = useCallback(
+    (accion: AuditAction, taskId: string, taskTitulo: string, diff: AuditDiff[]): AuditLog => ({
+      id: uuidv4(),
+      timestamp: new Date().toISOString(),
+      accion,
+      taskId,
+      taskTitulo,
+      diff,
+      userLabel: "Alumno/a",
+    }),
     []
   );
 
@@ -148,26 +141,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         estado,
       };
 
-      setState((prev) => {
-        pushHistory(prev);
-        return {
-          ...prev,
-          tasks: [...prev.tasks, newTask],
-        };
-      });
-
-      // Create audit log
       const diff: AuditDiff[] = Object.entries(newTask).map(([field, value]) => ({
         field,
         before: undefined,
         after: value,
       }));
 
-      createAuditLog("CREATE", newTask.id, newTask.titulo, diff);
+      const log = buildAuditLog("CREATE", newTask.id, newTask.titulo, diff);
+
+      setState((prev) => {
+        pushHistory(prev);
+        return {
+          ...prev,
+          tasks: [...prev.tasks, newTask],
+          auditLogs: [...prev.auditLogs, log],
+        };
+      });
 
       toast.success(`Tarea "${newTask.titulo}" creada`);
     },
-    [createAuditLog, pushHistory]
+    [buildAuditLog, pushHistory]
   );
 
   const updateTask = useCallback(
@@ -181,7 +174,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const oldTask = prev.tasks[taskIndex];
         const updatedTask = { ...oldTask, ...updates };
 
-        // Calculate diff
         const diff: AuditDiff[] = [];
         for (const key of Object.keys(updates) as (keyof Task)[]) {
           if (JSON.stringify(oldTask[key]) !== JSON.stringify(updates[key])) {
@@ -196,20 +188,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const newTasks = [...prev.tasks];
         newTasks[taskIndex] = updatedTask;
 
-        // Create audit log
-        if (diff.length > 0) {
-          createAuditLog("UPDATE", id, updatedTask.titulo, diff);
-        }
+        const newAuditLogs = diff.length > 0
+          ? [...prev.auditLogs, buildAuditLog("UPDATE", id, updatedTask.titulo, diff)]
+          : prev.auditLogs;
 
         toast.success(`Tarea "${updatedTask.titulo}" actualizada`);
 
         return {
           ...prev,
           tasks: newTasks,
+          auditLogs: newAuditLogs,
         };
       });
     },
-    [createAuditLog, pushHistory]
+    [buildAuditLog, pushHistory]
   );
 
   const deleteTask = useCallback(
@@ -220,14 +212,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         pushHistory(prev);
 
-        // Create audit log before deleting
         const diff: AuditDiff[] = Object.entries(task).map(([field, value]) => ({
           field,
           before: value,
           after: undefined,
         }));
 
-        createAuditLog("DELETE", id, task.titulo, diff);
+        const log = buildAuditLog("DELETE", id, task.titulo, diff);
 
         toast.success(`Tarea "${task.titulo}" eliminada`);
 
@@ -235,10 +226,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ...prev,
           tasks: prev.tasks.filter((t) => t.id !== id),
           godModeEvals: prev.godModeEvals.filter((e) => e.taskId !== id),
+          auditLogs: [...prev.auditLogs, log],
         };
       });
     },
-    [createAuditLog, pushHistory]
+    [buildAuditLog, pushHistory]
   );
 
   const moveTask = useCallback(
@@ -265,18 +257,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const newTasks = [...prev.tasks];
         newTasks[taskIndex] = updatedTask;
 
-        // Create audit log
-        createAuditLog("MOVE", id, updatedTask.titulo, diff);
+        const log = buildAuditLog("MOVE", id, updatedTask.titulo, diff);
 
         toast.success(`Tarea movida a ${newEstado.toUpperCase()}`);
 
         return {
           ...prev,
           tasks: newTasks,
+          auditLogs: [...prev.auditLogs, log],
         };
       });
     },
-    [createAuditLog, pushHistory]
+    [buildAuditLog, pushHistory]
   );
 
   // ============================================
