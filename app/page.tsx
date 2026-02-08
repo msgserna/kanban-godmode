@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { RiDashboardLine, RiFileTextLine, RiStarLine, RiTargetLine, RiShieldStarLine } from "@remixicon/react";
+import { RiDashboardLine, RiFileTextLine, RiStarLine, RiTargetLine, RiShieldStarLine, RiArrowGoBackLine, RiArrowGoForwardLine } from "@remixicon/react";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { AuditTable } from "@/components/audit/audit-table";
 import { GodModePanel } from "@/components/god-mode/god-mode-panel";
@@ -62,7 +63,7 @@ function GodModeView() {
 }
 
 function MainContent() {
-  const { state, setGodModeEnabled } = useApp();
+  const { state, setGodModeEnabled, undo, redo, canUndo, canRedo } = useApp();
   const [activeTab, setActiveTab] = useState("board");
 
   // If god mode is disabled and user is on god-mode tab, switch to board
@@ -87,8 +88,38 @@ function MainContent() {
             </div>
           </div>
 
-          {/* Import/Export, God Mode Switch & Theme Toggle */}
+          {/* Undo/Redo, God Mode Switch & Theme Toggle */}
           <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={undo}
+                    disabled={!canUndo}
+                    aria-label="Deshacer"
+                  >
+                    <RiArrowGoBackLine className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Deshacer (Ctrl+Z)</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={redo}
+                    disabled={!canRedo}
+                    aria-label="Rehacer"
+                  >
+                    <RiArrowGoForwardLine className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Rehacer (Ctrl+Y)</TooltipContent>
+              </Tooltip>
+            </div>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center space-x-2">

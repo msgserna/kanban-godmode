@@ -5,7 +5,7 @@
  * Manages tasks, audit logs, god mode evaluations, and all state mutations
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import {
@@ -19,6 +19,8 @@ import {
 } from "@/types";
 import { loadState, saveState } from "./storage";
 
+const MAX_HISTORY = 30;
+
 interface AppContextType {
   state: AppState;
   createTask: (task: Omit<Task, "id" | "fechaCreacion" | "estado">, estado?: TaskStatus) => void;
@@ -29,6 +31,10 @@ interface AppContextType {
   saveGodModeEval: (evalData: Omit<GodModeEval, "fechaEval">) => void;
   exportData: () => void;
   importData: (data: AppState) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -36,6 +42,61 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AppState>(loadState());
   const [isInitialized, setIsInitialized] = useState(false);
+  const pastRef = useRef<AppState[]>([]);
+  const futureRef = useRef<AppState[]>([]);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  const pushHistory = useCallback((currentState: AppState) => {
+    pastRef.current = [...pastRef.current.slice(-(MAX_HISTORY - 1)), currentState];
+    futureRef.current = [];
+    setCanUndo(true);
+    setCanRedo(false);
+  }, []);
+
+  const undo = useCallback(() => {
+    const past = pastRef.current;
+    if (past.length === 0) return;
+
+    const previous = past[past.length - 1];
+    pastRef.current = past.slice(0, -1);
+    futureRef.current = [...futureRef.current, state];
+
+    setState(previous);
+    setCanUndo(pastRef.current.length > 0);
+    setCanRedo(true);
+    toast.info("Acción deshecha");
+  }, [state]);
+
+  const redo = useCallback(() => {
+    const future = futureRef.current;
+    if (future.length === 0) return;
+
+    const next = future[future.length - 1];
+    futureRef.current = future.slice(0, -1);
+    pastRef.current = [...pastRef.current, state];
+
+    setState(next);
+    setCanUndo(true);
+    setCanRedo(futureRef.current.length > 0);
+    toast.info("Acción rehecha");
+  }, [state]);
+
+  // Keyboard shortcuts: Ctrl+Z / Ctrl+Y
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.key === "z" && e.shiftKey))) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [undo, redo]);
 
   // Load state on mount (client-side only)
   useEffect(() => {
@@ -87,10 +148,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         estado,
       };
 
-      setState((prev) => ({
-        ...prev,
-        tasks: [...prev.tasks, newTask],
-      }));
+      setState((prev) => {
+        pushHistory(prev);
+        return {
+          ...prev,
+          tasks: [...prev.tasks, newTask],
+        };
+      });
 
       // Create audit log
       const diff: AuditDiff[] = Object.entries(newTask).map(([field, value]) => ({
@@ -103,7 +167,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       toast.success(`Tarea "${newTask.titulo}" creada`);
     },
-    [createAuditLog]
+    [createAuditLog, pushHistory]
   );
 
   const updateTask = useCallback(
@@ -111,6 +175,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setState((prev) => {
         const taskIndex = prev.tasks.findIndex((t) => t.id === id);
         if (taskIndex === -1) return prev;
+
+        pushHistory(prev);
 
         const oldTask = prev.tasks[taskIndex];
         const updatedTask = { ...oldTask, ...updates };
@@ -143,7 +209,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         };
       });
     },
-    [createAuditLog]
+    [createAuditLog, pushHistory]
   );
 
   const deleteTask = useCallback(
@@ -151,6 +217,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setState((prev) => {
         const task = prev.tasks.find((t) => t.id === id);
         if (!task) return prev;
+
+        pushHistory(prev);
 
         // Create audit log before deleting
         const diff: AuditDiff[] = Object.entries(task).map(([field, value]) => ({
@@ -170,7 +238,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         };
       });
     },
-    [createAuditLog]
+    [createAuditLog, pushHistory]
   );
 
   const moveTask = useCallback(
@@ -181,6 +249,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         const oldTask = prev.tasks[taskIndex];
         if (oldTask.estado === newEstado) return prev;
+
+        pushHistory(prev);
 
         const updatedTask = { ...oldTask, estado: newEstado };
 
@@ -206,7 +276,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         };
       });
     },
-    [createAuditLog]
+    [createAuditLog, pushHistory]
   );
 
   // ============================================
@@ -274,9 +344,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [state]);
 
   const importData = useCallback((data: AppState) => {
-    setState(data);
+    setState((prev) => {
+      pushHistory(prev);
+      return data;
+    });
     toast.success("Datos importados correctamente");
-  }, []);
+  }, [pushHistory]);
 
   const value: AppContextType = {
     state,
@@ -288,6 +361,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     saveGodModeEval,
     exportData,
     importData,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
