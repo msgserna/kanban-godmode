@@ -10,7 +10,8 @@ Gestor de tareas tipo Kanban con funcionalidades avanzadas:
 - ✅ Búsqueda avanzada con operadores
 - ✅ Persistencia en localStorage
 - ✅ Export/Import JSON con validación
-- ✅ Modo Dios con evaluaciones 0-10
+- ✅ Modo Dios con rúbrica, 10 máximo y nota del 0-10
+- ✅ Undo/Redo (Ctrl+Z / Ctrl+Y) con historial de estados
 
 ## Cómo usar
 
@@ -30,6 +31,7 @@ Abrir [http://localhost:3000](http://localhost:3000)
 3. **Búsqueda avanzada**: Usa operadores como `tag:react p:high due:week`
 4. **Auditoría**: Consulta el historial completo de cambios
 5. **God Mode**: Activa el switch y evalúa tareas con rúbrica 0-10
+6. **Undo/Redo**: `Ctrl+Z` para deshacer, `Ctrl+Y` para rehacer (o botones en el header)
 
 ## Capturas
 
@@ -57,6 +59,7 @@ Abrir [http://localhost:3000](http://localhost:3000)
 - [x] Import JSON con validación completa
 - [x] Modo Dios con evaluaciones 0-10
 - [x] Panel resumen con estadísticas
+- [x] Undo/Redo con atajos de teclado (Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z)
 
 ### Técnicos
 - [x] Next.js App Router
@@ -107,6 +110,13 @@ Usamos `@dnd-kit` con:
 - `DragOverlay` para feedback visual
 
 La clave es que `onDragEnd` llama a `moveTask()` que automáticamente registra el cambio en auditoría.
+
+### Undo/Redo
+Patrón de **historial de snapshots** en memoria (no persiste en localStorage):
+- Antes de cada mutación se guarda el `AppState` completo en una pila `past`
+- Al deshacer, se restaura el estado anterior y el actual pasa a la pila `future`
+- Límite de 30 estados para evitar uso excesivo de memoria
+- Atajos: `Ctrl+Z` (undo), `Ctrl+Y` o `Ctrl+Shift+Z` (redo)
 
 ## Dependencias Principales
 
