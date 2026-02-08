@@ -134,7 +134,7 @@ const validateTask = (task: Task, index: number): ImportValidationError[] => {
     });
   }
 
-  if (!["todo", "doing", "done"].includes(task.estado)) {
+  if (!["todo", "doing", "review", "done"].includes(task.estado)) {
     errors.push({
       field: `tasks[${index}].estado`,
       message: "Invalid estado"

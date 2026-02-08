@@ -45,7 +45,7 @@ Abrir [http://localhost:3000](http://localhost:3000)
 ## ✅ Checklist de Requisitos
 
 ### Funcionales
-- [x] Kanban con 3 columnas (Todo, Doing, Done)
+- [x] Kanban con 4 columnas (Todo, Doing, Review, Done)
 - [x] CRUD completo de tareas
 - [x] Drag & drop funcional (@dnd-kit)
 - [x] Modelo de datos completo (id, titulo, descripcion, prioridad, tags, estimacionMin, fechas, estado)
