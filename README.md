@@ -1,10 +1,10 @@
-# 🎯 Kanban God - Advanced Task Manager
+# Kanban God - Advanced Task Manager
 
 Advanced Kanban board with audit logs, advanced search operators, and God Mode evaluation system.
 
 **Enlace Vercel:** _[Pendiente de deploy]_
 
-## 📋 Objetivo
+## Objetivo
 
 Gestor de tareas tipo Kanban con funcionalidades avanzadas:
 - ✅ Kanban completo con drag & drop
@@ -14,7 +14,7 @@ Gestor de tareas tipo Kanban con funcionalidades avanzadas:
 - ✅ Export/Import JSON con validación
 - ✅ Modo Dios con evaluaciones 0-10
 
-## 🚀 Cómo usar
+## Cómo usar
 
 ### Instalación
 
@@ -33,7 +33,7 @@ Abrir [http://localhost:3000](http://localhost:3000)
 4. **Auditoría**: Consulta el historial completo de cambios
 5. **God Mode**: Activa el switch y evalúa tareas con rúbrica 0-10
 
-## 📸 Capturas
+## Capturas
 
 ### 1. Kanban Board con Drag & Drop
 ![Descripción](./public/images/kanban.png)
@@ -69,11 +69,6 @@ Abrir [http://localhost:3000](http://localhost:3000)
 - [x] Accesibilidad (aria-labels, navegación teclado, focus visible)
 - [x] Estados vacíos bien diseñados
 - [x] Mínimo 10 commits significativos
-
-### GitHub
-- [x] 10+ commits con mensajes descriptivos
-- [x] README completo con objetivo, uso y capturas
-- [x] Decisiones técnicas documentadas
 
 ## Decisiones Técnicas
 
@@ -144,5 +139,5 @@ La clave es que `onDragEnd` llama a `moveTask()` que automáticamente registra e
 
 ## 👤 Autor
 
-**Msgserna**
+**msgserna**
 
