@@ -137,7 +137,7 @@ La clave es que `onDragEnd` llama a `moveTask()` que automáticamente registra e
 - **Estilos**: TailwindCSS 4
 - **TypeScript**: Strict mode, sin `any`
 
-## 👤 Autor
+## 👤 Autor **msgserna**
 
-**msgserna**
+
 
