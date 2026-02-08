@@ -1,8 +1,6 @@
 # Kanban God - Advanced Task Manager
 
-Advanced Kanban board with audit logs, advanced search operators, and God Mode evaluation system.
-
-**Enlace Vercel:** _[Pendiente de deploy]_
+**Enlace Vercel:** https://kanban-godmode.vercel.app
 
 ## Objetivo
 
