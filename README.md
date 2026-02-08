@@ -69,7 +69,6 @@ Abrir [http://localhost:3000](http://localhost:3000)
 - [x] Separación: types.ts, lib/storage.ts, lib/query.ts
 - [x] Accesibilidad (aria-labels, navegación teclado, focus visible)
 - [x] Estados vacíos bien diseñados
-- [x] Mínimo 10 commits significativos
 
 ## Decisiones Técnicas
 
