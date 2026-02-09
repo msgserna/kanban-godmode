@@ -173,18 +173,34 @@ export function GodModePanel() {
                     </div>
                   </div>
 
-                  {/* Score */}
+                  {/* Comment and Score */}
                   {existing && (
-                    <div className="flex flex-col items-center gap-1 shrink-0">
-                      <span className="text-2xl font-bold">{existing.rubrica.toFixed(1)}</span>
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, idx) => (
-                          idx < Math.round(existing.rubrica / 2) ? (
-                            <RiStarFill key={idx} className="h-3 w-3 text-primary" />
-                          ) : (
-                            <RiStarLine key={idx} className="h-3 w-3 text-gray-300" />
-                          )
-                        ))}
+                    <div className="flex items-center gap-4 shrink-0">
+                      {/* Comment (truncated if long) */}
+                      {existing.observaciones && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="text-sm text-muted-foreground max-w-[200px] truncate cursor-help">
+                              {existing.observaciones}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-sm">
+                            <p className="whitespace-pre-wrap">{existing.observaciones}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {/* Score */}
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-2xl font-bold">{existing.rubrica.toFixed(1)}</span>
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, idx) => (
+                            idx < Math.round(existing.rubrica / 2) ? (
+                              <RiStarFill key={idx} className="h-3 w-3 text-primary" />
+                            ) : (
+                              <RiStarLine key={idx} className="h-3 w-3 text-gray-300" />
+                            )
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
